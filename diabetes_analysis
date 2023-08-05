@@ -1,0 +1,50 @@
+/* Diabetes Dataset Analysis */
+
+/*Dataset Summary*/
+--How many records are within the dataset
+SELECT COUNT(*) as total_records from diabetes;
+--769 
+
+--How many diabetic and non diabetic patients are in the dataset
+-- 0 being non-diabetic 1  being diabetic
+SELECT outcome, COUNT(*) as result from diabetes group by outcome;
+--500 non diabetics, 268 diabetics
+
+--Average age of patients within the dataset
+SELECT ROUND(AVG(age),2) as average_age from diabetes;
+--Avg age is 33.2
+
+/*Correlation and relationships within the dataset*/
+--Average BMI for diabetic and non diabetic patients
+SELECT outcome, ROUND(AVG(BMI),2) from diabetes GROUP by outcome
+--Non diabetics BMI is 30.3 and for diabetics is 35.14
+
+--Does pregnancies affect likehihood of diabetes 
+SELECT pregnancies, ROUND(AVG(outcome),2) as likelihood_diabetes from diabetes group by pregnancies order by likelihood_diabetes ASC
+--The more pregnancies result more in the likelihood of diabetes 
+
+--Finding the average gluclose level for each age group
+SELECT CASE 
+    when age BETWEEN 18 and 30 then '18-30'
+    when age between 31 and 40 then '31-40'
+    when age BETWEEN 41 and 50 then '41-50'
+    else 'Above 50+'
+    END as age_group,
+    ROUND(AVG(glucose),2) as average_glucose
+    from diabetes 
+    group by age_group;
+--18-30 had the lowest gluclose levels, while the above 50+ had the highest avg gluclose level
+
+--Sorting patients based on BMI and calculate the percentage of diabetics in each group
+SELECT CASE
+	WHEN bmi < 18.5 then 'underweight'
+    when bmi >= 18.5 and bmi < 24.9 then 'normal'
+    when bmi >= 25 and bmi < 29.9 then 'overweight'
+    else 'obese'
+    end as bmi_group,
+    count(*) as total_patients,
+    SUM(outcome) as total_diabetic_patients,
+    ROUND((SUM(outcome) * 100.0/ COUNT(*)),2) as percentage_diabetic
+   from diabetes GROUP by bmi_group
+--Results are that obese had the most percentage of diabetics and normal had the least
+
